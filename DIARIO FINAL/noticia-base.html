@@ -1,0 +1,84 @@
+<div class="pagina-noticia">
+
+<style>
+.pagina-noticia {
+    background: #0c0c15;
+    color: #fff;
+    padding: 20px;
+    min-height: 80vh;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* título */
+.noticia-titulo {
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 14px;
+    color: #eaeaff;
+    text-transform: uppercase;
+}
+
+/* fecha */
+.noticia-fecha {
+    color: #b8b8d2;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+/* foto */
+.noticia-img {
+    width: 100%;
+    max-height: 380px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border:2px solid #9a9aaf;
+    box-shadow:0 4px 18px rgba(0,0,0,0.55);
+}
+
+/* texto */
+.noticia-texto {
+    font-size: 17px;
+    line-height: 1.55;
+    color: #dcdcf7;
+}
+
+/* botón volver */
+.noticia-volver {
+    margin-top: 35px;
+    padding: 12px 18px;
+    background: #111122;
+    border: 1px solid #9ac8ff;
+    border-radius: 10px;
+    width: fit-content;
+    cursor: pointer;
+    font-weight: 700;
+    color: #d6eaff;
+    box-shadow:0 4px 14px rgba(0,0,0,0.4);
+    transition: .2s;
+}
+.noticia-volver:hover {
+    background:#1c1c33;
+    transform: translateY(-3px);
+}
+</style>
+
+<div class="noticia-titulo">TÍTULO DE LA NOTICIA</div>
+<div class="noticia-fecha">Actualizado: 18 de noviembre de 2025</div>
+
+<img src="foto-noticia.jpg" class="noticia-img">
+
+<div class="noticia-texto">
+    Aquí va el texto completo de la noticia.  
+    Podés pegar texto largo, imágenes adicionales, gráficos, listas o cualquier contenido HTML.
+
+    <br><br>
+    El estilo está optimizado para mantener la estética del diario, 
+    con fondo oscuro elegante y tipografía clara.
+</div>
+
+<div class="noticia-volver" onclick="cargar('inicio.html')">
+    ⬅ VOLVER AL INICIO
+</div>
+
+</div>

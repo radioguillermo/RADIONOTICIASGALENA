@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radionoticias Galena</title>
+
+<style>
+body{
+    margin:0;
+    background:#0c0c15;
+    color:white;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+/* VISIBILIDAD PC / CELULAR */
+.pc-only{display:block;}
+.mobile-only{display:none;}
+@media(max-width:800px){
+  .pc-only{display:none;}
+  .mobile-only{display:block;}
+}
+
+/* ==========================================================
+                    VERSION PC (NO TOCADA — INDEX 01)
+========================================================== */
+
+.top-pc{
+    width:100%;
+    height:260px;
+    background:url("fondos01.jpg") center/cover no-repeat;
+    position:relative;
+    overflow:hidden;
+}
+.top-pc::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+}
+.logo-left{
+    position:absolute;
+    width:140px;
+    left:20px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:10;
+}
+.top-center{
+    position:absolute;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:12;
+}
+.top-center img{
+    width:380px;
+    animation:resp 4s ease-in-out infinite;
+}
+@keyframes resp{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.03);}
+    100%{transform:scale(1);}
+}
+.top-info{
+    position:absolute;
+    right:20px;
+    bottom:20px;
+    z-index:20;
+    text-align:right;
+}
+#fecha{
+    margin-bottom:8px;
+    font-size:15px;
+}
+.player-bar{
+    background:rgba(255,255,255,0.15);
+    padding:6px 14px;
+    border-radius:50px;
+    border:1px solid #7dd0ff;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+.play-btn{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    background:black;
+    border:2px solid #7dd0ff;
+    color:white;
+    font-size:24px;
+    cursor:pointer;
+}
+.eq-container{
+    display:flex;
+    gap:3px;
+}
+.eq-bar{
+    width:4px;
+    height:16px;
+    border-radius:4px;
+    background:linear-gradient(to top,#fff,#8af);
+    transform-origin:center;
+    animation:eq 0.5s infinite alternate ease-in-out;
+    animation-play-state:paused;
+}
+
+.finance-bar{
+    width:100%;
+    height:35px;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    background:linear-gradient(180deg,#26163c,#5e49aa 40%,#3a2c6d 70%,#06020d);
+}
+.ticker-text{
+    white-space:nowrap;
+    font-size:15px;
+    animation:ticker 40s linear infinite;
+}
+@keyframes ticker{
+    0%{transform:translateX(100%);}
+    100%{transform:translateX(-100%);}
+}
+.sep{padding:0 35px;}
+
+.pc-footer-info{
+    position:absolute;
+    bottom:10px;
+    right:20px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    z-index:200;
+}
+
+/* ==========================================================
+                    VERSION CELULAR — INDEX 02
+========================================================== */
+
+.mobile-header{
+    position:fixed;
+    top:0; left:0;
+    width:100%;
+    height:100px;
+    background:url("fondos01.jpg") center/cover no-repeat;
+    backdrop-filter:blur(7px) brightness(0.5);
+    overflow:hidden;
+    z-index:3000;
+
+    display:flex;
+    align-items:center;
+
+    /* AJUSTE PARA QUE PLAY NO QUEDE PEGADO A LA DERECHA */
+    justify-content:space-around;
+
+    padding:0 15px;
+    box-sizing:border-box;
+}
+
+.mh-logo{
+    width:58px;
+    height:58px;
+    border-radius:50%;
+}
+
+/* +20% más grande */
+.mh-name{
+    height:58px;
+    object-fit:contain;
+}
+
+.mh-play{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    border:2px solid #ccc;
+    background:#c30000;
+    color:white;
+    font-size:24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 8px #000;
+}
+.mh-play.playing{
+    background:#10b910;
+}
+
+@media(max-width:800px){
+    #contenido{
+        margin-top:110px;
+        margin-bottom:80px;
+    }
+}
+</style>
+
+<script>
+function toggleRadio(){
+    const audio=document.getElementById("radio");
+    const btn=document.querySelector(".mh-play");
+    if(audio.paused){
+        audio.play();
+        btn.classList.add("playing");
+        btn.textContent="❚❚";
+    }else{
+        audio.pause();
+        btn.classList.remove("playing");
+        btn.textContent="▶";
+    }
+}
+
+function cargar(p){
+    fetch(p)
+    .then(r=>r.text())
+    .then(t=>document.getElementById("contenido").innerHTML=t);
+}
+
+function actualizarFecha(){
+    const f=document.getElementById("fecha");
+    if(!f) return;
+    f.textContent=new Date().toLocaleString("es-AR",{dateStyle:"full",timeStyle:"short"});
+}
+document.addEventListener("DOMContentLoaded",()=>{
+    cargar("inicio.html");
+    actualizarFecha();
+    setInterval(actualizarFecha,60000);
+});
+</script>
+
+</head>
+
+<body>
+
+<!-- PC HEADER -->
+<div class="pc-only">
+    <div class="top-pc">
+        <img src="logo01.png" class="logo-left">
+        <div class="top-center">
+            <img src="logo_galena.png">
+        </div>
+
+        <div class="top-info">
+            <div id="fecha"></div>
+            <div class="player-bar">
+                <button class="play-btn" onclick="toggleRadio()">▶</button>
+                <div class="eq-container">
+                    <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                </div>
+            </div>
+
+            <div class="pc-footer-info">
+                <img src="wtsp.png">
+                <a href="https://wa.me/5492646728911">
+                    Guillermo David González · Director General · 264 672 8911
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="finance-bar">
+        <span id="ticker-text" class="ticker-text">Cargando...</span>
+    </div>
+</div>
+
+<!-- CELULAR HEADER -->
+<div class="mobile-only mobile-header">
+    <img src="logo01.png" class="mh-logo">
+
+    <!-- LOGO CENTRAL +20% -->
+    <img src="logo_galena.png" class="mh-name">
+
+    <div class="mh-play" onclick="toggleRadio()">▶</div>
+</div>
+
+<audio id="radio">
+  <source src="https://stream.zeno.fm/udkyvynfuuhvv" type="audio/mpeg">
+</audio>
+
+<div id="contenido"></div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
