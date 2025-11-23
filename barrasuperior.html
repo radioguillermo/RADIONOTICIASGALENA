@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Barra Superior - Galena Radio Noticias</title>
+
+<style>
+body{
+  margin:0;
+  padding:0 10px;
+  box-sizing:border-box;
+  background:#000;
+  color:#fff;
+  font-family:'Orbitron',sans-serif;
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  overflow:hidden;
+}
+
+/* IZQUIERDA: LOGO + PLAY + TEXTO */
+#player-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-shrink:0;
+}
+#logo{
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  cursor:pointer;
+}
+#play-btn{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:#fff;
+  border:2px solid #555;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+#play-btn.play::before{
+  content:'';
+  border-left:10px solid #ff2222;
+  border-top:6px solid transparent;
+  border-bottom:6px solid transparent;
+}
+#play-btn.pause::before{
+  content:'';
+  width:10px;
+  height:10px;
+  border-left:3px solid #999;
+  border-right:3px solid #999;
+}
+#live-text{
+  font-size:15px;
+  font-weight:bold;
+  letter-spacing:1px;
+}
+
+/* CENTRO: VISUALIZADOR SIMULADO */
+#viz-wrapper{
+  flex:1;
+  padding:0 20px;
+  display:flex;
+  align-items:center;
+}
+#viz-canvas{
+  width:100%;
+  height:40px;
+  display:block;
+}
+
+/* DERECHA: HORA Y FECHA */
+#clock-box{
+  flex-shrink:0;
+  text-align:right;
+  line-height:1.1;
+  margin-right:4px;
+}
+#clock{
+  font-family:'DS-Digital',monospace;
+  font-size:26px;
+  color:#00bfff;
+}
+#fecha{
+  font-size:14px;
+  color:#66ccff;
+}
+
+/* CELULAR: ocultar espectro y reloj grande */
+@media(max-width:900px){
+  #viz-wrapper{display:none;}
+  #clock{display:none;}
+  body{padding:0 8px;}
+}
+</style>
+
+<link href="https://fonts.cdnfonts.com/css/ds-digital" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- IZQUIERDA -->
+<div id="player-left">
+  <img src="LOGOOOOO88.png" id="logo" onclick="volverInicio()">
+  <div id="play-btn" class="pause" onclick="toggleRadio()"></div>
+  <div id="live-text">GALENA EN VIVO</div>
+</div>
+
+<!-- CENTRO: ANALIZADOR SIMULADO -->
+<div id="viz-wrapper">
+  <canvas id="viz-canvas"></canvas>
+</div>
+
+<!-- DERECHA -->
+<div id="clock-box">
+  <div id="clock">00:00</div>
+  <div id="fecha"></div>
+</div>
+
+<audio id="radio">
+  <source src="http://link.zeno.fm:80/yfvwqynfuuhvv" type="audio/mpeg">
+</audio>
+
+<script>
+/* RELOJ */
+function actualizarReloj(){
+  const a = new Date();
+  const h = String(a.getHours()).padStart(2,'0');
+  const m = String(a.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent = h+":"+m;
+
+  const opt = {weekday:'short',day:'2-digit',month:'2-digit'};
+  document.getElementById('fecha').textContent =
+    a.toLocaleDateString('es-AR',opt);
+}
+setInterval(actualizarReloj,1000);
+actualizarReloj();
+
+/* VISUALIZADOR FANTASÍA SIMULADO */
+const canvas = document.getElementById('viz-canvas');
+const ctx    = canvas.getContext('2d');
+
+function ajustarCanvas(){
+  const r = canvas.getBoundingClientRect();
+  canvas.width  = r.width;
+  canvas.height = r.height;
+}
+window.addEventListener('resize', ajustarCanvas);
+ajustarCanvas();
+
+let reproduciendo = false;
+
+/* barras finas y muchas */
+const barras = 120;              // 3 veces más que antes
+let valores = new Array(barras).fill(0);  // suavizado
+
+function animar(){
+  const w = canvas.width;
+  const h = canvas.height;
+  const centro = h/2;
+
+  ctx.clearRect(0,0,w,h);
+
+  // degradado blanco → gris → celeste → azul
+  const grad = ctx.createLinearGradient(0,0,w,0);
+  grad.addColorStop(0,   '#ffffff');
+  grad.addColorStop(0.35,'#d0d8e0');
+  grad.addColorStop(0.7, '#7fd3ff');
+  grad.addColorStop(1,   '#007bff');
+  ctx.fillStyle = grad;
+
+  const ancho = w / barras;
+
+  if(!reproduciendo){
+    // PAUSA: una sola línea celeste fina en el centro
+    ctx.strokeStyle = '#7fd3ff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, centro);
+    ctx.lineTo(w, centro);
+    ctx.stroke();
+  }else{
+    // PLAY: barras suaves, animación lenta
+    for(let i=0; i<barras; i++){
+      const target = Math.random()*0.4 + 0.1;  // rango más suave
+      valores[i] = valores[i]*0.8 + target*0.2; // suavizado
+
+      const altura = valores[i] * (h/2);        // hasta mitad de la altura
+      const x = i * ancho;
+
+      // arriba
+      ctx.fillRect(x, centro-altura, ancho*0.7, altura);
+      // abajo (simétrico)
+      ctx.fillRect(x, centro, ancho*0.7, altura);
+    }
+  }
+
+  requestAnimationFrame(animar);
+}
+animar();
+
+/* AUDIO (solo play/pause, sin análisis) */
+const radio   = document.getElementById('radio');
+const playBtn = document.getElementById('play-btn');
+
+function toggleRadio(){
+  if(reproduciendo){
+    radio.pause();
+    playBtn.classList.remove('play');
+    playBtn.classList.add('pause');
+  }else{
+    radio.play();
+    playBtn.classList.remove('pause');
+    playBtn.classList.add('play');
+  }
+  reproduciendo = !reproduciendo;
+}
+
+/* VOLVER AL INICIO */
+function volverInicio(){
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
